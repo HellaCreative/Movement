@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movement — Own Your Stage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F7F5F0;
+    color: #1A1A18;
+    min-height: 100vh;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 1.5px solid #1A1A18;
+    padding-bottom: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: #1A1A18;
+  }
+
+  .tagline {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: #D85A30;
+    margin-top: 4px;
+  }
+
+  .manifesto {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: #5F5E5A;
+    margin-top: 6px;
+    letter-spacing: 0.01em;
+  }
+
+  /* Opener */
+  .opener {
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: #1A1A18;
+    margin-bottom: 2.5rem;
+    padding-left: 1.25rem;
+    border-left: 3px solid #D85A30;
+  }
+
+  .opener strong { font-weight: 500; }
+
+  /* Section label */
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #888780;
+    margin-bottom: 1rem;
+  }
+
+  /* Divider */
+  hr {
+    border: none;
+    border-top: 0.5px solid #D3D1C7;
+    margin: 2rem 0;
+  }
+
+  /* Two column */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Standard block */
+  .block {
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 0.5px solid #D3D1C7;
+    padding: 1.25rem 1.4rem;
+  }
+
+  .block-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #D85A30;
+    margin-bottom: 6px;
+  }
+
+  .block-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: #1A1A18;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .block-body {
+    font-size: 13.5px;
+    color: #5F5E5A;
+    line-height: 1.7;
+  }
+
+  /* Full-width block */
+  .full-block {
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 0.5px solid #D3D1C7;
+    padding: 1.25rem 1.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Accent block */
+  .accent-block {
+    background: #FAECE7;
+    border-radius: 12px;
+    border: 0.5px solid #F0997B;
+    padding: 1.25rem 1.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .accent-block .block-label { color: #993C1D; }
+  .accent-block .block-title { color: #3d1a0a; }
+  .accent-block .block-body { color: #71311a; }
+
+  /* Collective block — dark, fully hardcoded */
+  .collective-block {
+    background: #1A1A18;
+    border-radius: 12px;
+    padding: 1.75rem 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .collective-block .block-label {
+    color: #F0997B;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .collective-block .block-title {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 21px;
+    color: #FFFFFF;
+    margin-bottom: 14px;
+    line-height: 1.45;
+  }
+
+  .collective-block .block-body {
+    font-size: 14px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.75;
+  }
+
+  /* Stakeholders */
+  .stakeholder-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .stake-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 0.5px solid #D3D1C7;
+    padding: 1.1rem 1.25rem;
+  }
+
+  .stake-who {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #B4B2A9;
+    margin-bottom: 5px;
+  }
+
+  .stake-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: #1A1A18;
+    margin-bottom: 7px;
+  }
+
+  .stake-gets {
+    font-size: 12.5px;
+    color: #5F5E5A;
+    line-height: 1.6;
+  }
+
+  /* Money row */
+  .money-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .money-card {
+    background: #FFFFFF;
+    border: 0.5px solid #D3D1C7;
+    border-radius: 8px;
+    padding: 1rem 1rem;
+    text-align: center;
+  }
+
+  .money-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: #D85A30;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+
+  .money-label {
+    font-size: 11px;
+    color: #888780;
+    line-height: 1.45;
+  }
+
+  /* Closing quote */
+  .closing-quote {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 20px;
+    line-height: 1.6;
+    color: #1A1A18;
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid #D85A30;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Footer */
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid #D3D1C7;
+    padding-top: 1.25rem;
+    margin-top: 0.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-wordmark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.06em;
+    color: #1A1A18;
+    opacity: 0.2;
+  }
+
+  .footer-note {
+    font-size: 11.5px;
+    color: #B4B2A9;
+    max-width: 440px;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .wordmark { font-size: 58px; }
+    .opener { font-size: 19px; }
+    .two-col { grid-template-columns: 1fr; }
+    .stakeholder-grid { grid-template-columns: 1fr; }
+    .money-row { grid-template-columns: repeat(2, 1fr); }
+    .footer-note { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="wordmark">Movement</div>
+    <div class="tagline">Own your stage.</div>
+    <div class="manifesto">Built by artists. Owned by artists. Powered by all of us.</div>
+  </div>
+
+  <!-- Opener -->
+  <div class="opener">
+    Technology killed the music scene.<br>
+    <strong>Movement is how we bring it back.</strong>
+  </div>
+
+  <!-- The Problem -->
+  <p class="section-label">The problem</p>
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label">Mass streaming services</div>
+      <div class="block-title">Own the digital</div>
+      <div class="block-body">Artists with millions of streams earn less than minimum wage. Tracks under 1,000 plays earn zero. The middle class of music is being deliberately de-monetized to fund the top 1%.</div>
+    </div>
+    <div class="block">
+      <div class="block-label">Live Nation · Ticketmaster</div>
+      <div class="block-title">Own the physical</div>
+      <div class="block-body">A federal jury found Live Nation guilty of illegal monopoly on April 16, 2026. They control 86% of major venues. Artists and fans are squeezed from both ends simultaneously.</div>
+    </div>
+  </div>
+
+  <div class="accent-block">
+    <div class="block-label">The gap nobody has closed</div>
+    <div class="block-title">You already built the audience. You just never got to own the relationship.</div>
+    <div class="block-body">The connection that happens in a live room — when a crowd turns, when people stop talking and start singing back — disappears the second the night ends. Technology captured the music but lost the moment. Movement gives that moment somewhere to live.</div>
+  </div>
+
+  <hr>
+
+  <!-- The Platform -->
+  <p class="section-label">The platform</p>
+  <div class="two-col">
+    <div class="block">
+      <div class="block-label">The Stage</div>
+      <div class="block-title">Live. Raw. Yours.</div>
+      <div class="block-body">Live sessions, writing rooms, acoustic sets, behind-the-scenes access. Artists go live on their terms. Fans get proximity to the creative process. Every live moment is a subscription event worth paying for.</div>
+    </div>
+    <div class="block">
+      <div class="block-label">The Vault</div>
+      <div class="block-title">Your archive. Your terms.</div>
+      <div class="block-body">Every moment on Stage feeds the Vault automatically. Demos, recordings, setlists, unreleased work. Artists control what's free, what's subscriber-only, what's locked. The catalog belongs to the artist. Always.</div>
+    </div>
+  </div>
+
+  <div class="full-block">
+    <div class="block-label">Discovery + The Collective</div>
+    <div class="block-title">The scene is back.</div>
+    <div class="block-body">Fans discover artists the way they always did — through other artists. Established artists co-sign emerging ones. When a Juno Award-winning artist champions a band nobody's heard of, that band gets access to an audience that already knows how to listen. The scene expands the way scenes always have — one true believer at a time.</div>
+  </div>
+
+  <div class="full-block">
+    <div class="block-label">The share moment</div>
+    <div class="block-title">It's not the viral. It is the virus.</div>
+    <div class="block-body">When something happens on Stage — a song lands, an artist says something real — fans hit one button. Not share to Movement. Share to everywhere. A clip, a moment, a direct link back to that artist's discovery page. The fan becomes the ambassador. Every share is a portal. Every portal is a new fan finding their front door.</div>
+  </div>
+
+  <div class="full-block">
+    <div class="block-label">Concert listings</div>
+    <div class="block-title">The digital leads back to the physical.</div>
+    <div class="block-body">The Stage builds the relationship. The show is where you consummate it. Movement connects the digital moment to the live event. A fan who has been subscribed for six months and finally shows up to a show is not a casual attendee. They are a true believer. In a world where Ticketmaster just lost in federal court, artists listing and selling directly through Movement is both a statement and a structural advantage.</div>
+  </div>
+
+  <hr>
+
+  <!-- Stakeholders -->
+  <p class="section-label">Who gets value</p>
+  <div class="stakeholder-grid">
+    <div class="stake-card">
+      <div class="stake-who">Stakeholder</div>
+      <div class="stake-name">The established artist</div>
+      <div class="stake-gets">Direct revenue. Fan relationships they actually own. Status as a scene-maker through the Collective. A platform that works in their interest — not against it.</div>
+    </div>
+    <div class="stake-card">
+      <div class="stake-who">Stakeholder</div>
+      <div class="stake-name">The emerging artist</div>
+      <div class="stake-gets">A path forward that doesn't require algorithmic luck. Co-signs that mean something. Access to established audiences. A place to build from the first ten fans.</div>
+    </div>
+    <div class="stake-card">
+      <div class="stake-who">Stakeholder</div>
+      <div class="stake-name">The fan</div>
+      <div class="stake-gets">Proximity to artists they love. Discovery through trust, not algorithms. The feeling of "I found this band" — and a frictionless way to prove it to everyone they know.</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- The Money -->
+  <p class="section-label">The money</p>
+  <div class="money-row">
+    <div class="money-card">
+      <div class="money-value">80%</div>
+      <div class="money-label">Goes to the artist. Every time. No exceptions.</div>
+    </div>
+    <div class="money-card">
+      <div class="money-value">20%</div>
+      <div class="money-label">Movement's take. Transparent. Flat. Covers everything.</div>
+    </div>
+    <div class="money-card">
+      <div class="money-value">100%</div>
+      <div class="money-label">Artist control over pricing, access tiers, and catalog.</div>
+    </div>
+    <div class="money-card">
+      <div class="money-value">$0</div>
+      <div class="money-label">Paid to a label, a gatekeeper, or an algorithm.</div>
+    </div>
+  </div>
+
+  <div class="collective-block">
+    <div class="block-label">The Collective Fund</div>
+    <div class="block-title">"It's not charity. It's not philanthropy. It's the digital version of what Jimi Hendrix did when he pulled an unknown band onto his stage. Except now it has a financial mechanism underneath it."</div>
+    <div class="block-body">When an established artist hits a revenue milestone on Movement, a percentage flows into a Collective Fund they direct toward artists they believe in. The established artist gains status and scene influence. The emerging artist gets visibility, resources, and a co-sign that means something. The platform gets a self-sustaining ecosystem where success breeds more success instead of concentrating at the top. This is what "powered by all of us" actually means.</div>
+  </div>
+
+  <div class="full-block">
+    <div class="block-label">Revenue streams</div>
+    <div class="block-body" style="font-size:13.5px; line-height:1.9; color:#5F5E5A;">
+      Artist subscriptions (fan to artist, artist sets price) &nbsp;·&nbsp; Pay-per-view moments &nbsp;·&nbsp; Tips and live donations &nbsp;·&nbsp; Concert ticket sales &nbsp;·&nbsp; Merch &nbsp;·&nbsp; The Collective Fund (milestone-triggered, artist-directed)
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- The Moment -->
+  <p class="section-label">The moment</p>
+
+  <div class="closing-quote">
+    "Mass streaming services own the digital. Ticketmaster owns the physical. Both are now visibly, publicly, provably corrupt. Movement is the alternative to both of them simultaneously — and it arrives the week a federal jury handed us the opening line."
+  </div>
+
+  <div class="full-block">
+    <div class="block-label">The ethos that cannot be copied</div>
+    <div class="block-body" style="font-size:14px; line-height:1.8; color:#5F5E5A;">
+      Every platform extracts from artists. Movement is structurally built to do the opposite. The 80/20 split is not a feature — it is a founding principle. The Collective is not a marketing initiative — it is a governance mechanism. The share moment is not a growth hack — it is the scene operating the way it always did, finally given a digital layer. This is not a better streaming service. This is the correction to the streaming service. And the music industry has never needed a correction more than it does right now.
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-row">
+    <div class="footer-wordmark">MOVEMENT</div>
+    <div class="footer-note">This document is a concept brief. It is intentionally incomplete. The ideas inside it belong to everyone who believes the music industry deserves better — and is willing to help build what comes next.</div>
+  </div>
+
+</div>
+</body>
+</html>

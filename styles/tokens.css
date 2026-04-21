@@ -1,0 +1,159 @@
+/**
+ * Band as One design tokens — single source of truth.
+ * All colors, type, spacing, motion: reference only these custom properties.
+ */
+:root {
+  /* Colors */
+  --black: #0c0b0a;
+  --surface: #141210;
+  --surface-2: #1c1a17;
+  --orange: #e05c20;
+  --orange-dim: rgba(224, 92, 32, 0.12);
+  --orange-mid: rgba(224, 92, 32, 0.4);
+  --white: #f2ede8;
+  --muted: rgba(242, 237, 232, 0.45);
+  --sub: rgba(242, 237, 232, 0.22);
+  --border: rgba(242, 237, 232, 0.08);
+  --border-hover: rgba(242, 237, 232, 0.16);
+  --ghost-border-hover: rgba(242, 237, 232, 0.3);
+
+  /* Font stacks (families match Google Fonts imports in globals.css) */
+  --font-display: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Barlow", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+
+  /* Font weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Type scale — sizes */
+  --text-hero: 80px;
+  --text-section-header: 13px;
+  --text-artist-name-card: 20px;
+  --text-genre-city-min: 9px;
+  --text-genre-city-max: 10px;
+  --text-body-min: 14px;
+  --text-body-max: 16px;
+  --text-ui-label-min: 9px;
+  --text-ui-label-max: 11px;
+  --text-stat-min: 28px;
+  --text-stat-max: 36px;
+  --text-nav-logo: 20px;
+  --text-nav-link: 13px;
+  --text-ticker: 11px;
+
+  /* Type scale — line heights */
+  --leading-body: 1.65;
+  --leading-section-header: 1.2;
+  --leading-hero: 1;
+
+  /* Type scale — letter spacing */
+  --tracking-section-header: 0.14em;
+  --tracking-ui-label: 0.12em;
+  --tracking-nav-link: 0.1em;
+  --tracking-nav-logo: 0.04em;
+
+  /* Type scale — text transforms */
+  --text-transform-section-header: uppercase;
+  --text-transform-ui-label: uppercase;
+  --text-transform-hero: uppercase;
+  --text-transform-artist-name-card: uppercase;
+  --text-transform-genre-city: uppercase;
+
+  /* Spacing */
+  --space-base: 8px;
+  --section-padding-top: 32px;
+  --section-padding-x: 40px;
+  --container-padding-x: 40px;
+  --card-padding-min: 12px;
+  --card-padding-max: 14px;
+
+  /* Nav */
+  --nav-height: 52px;
+  --nav-z-index: 200;
+  --nav-background: rgba(12, 11, 10, 0.96);
+  --nav-backdrop-blur: 12px;
+
+  /* Ticker strip */
+  --ticker-height: 32px;
+  --ticker-text: rgba(12, 11, 10, 0.85);
+  --ticker-font-weight: 700;
+  --ticker-separator-size: 4px;
+  --ticker-item-gap: 24px;
+
+  /* Borders & surfaces */
+  --border-width: 0.5px;
+  --radius: 2px;
+  --border-default: var(--border-width) solid var(--border);
+  --border-interactive-hover: var(--border-width) solid var(--border-hover);
+
+  /* Cards */
+  --card-background: var(--surface);
+  --card-border: var(--border-width) solid var(--border);
+
+  /* Buttons — primary */
+  --btn-primary-background: var(--orange);
+  --btn-primary-color: var(--white);
+  --btn-primary-radius: 2px;
+  --btn-primary-padding-y: 7px;
+  --btn-primary-padding-x: 20px;
+  --btn-primary-hover-opacity: 0.85;
+
+  /* Buttons — ghost */
+  --btn-ghost-background: transparent;
+  --btn-ghost-border: var(--border-width) solid var(--border-hover);
+  --btn-ghost-color: var(--muted);
+  --btn-ghost-color-hover: var(--white);
+  --btn-ghost-border-hover: var(--border-width) solid var(--ghost-border-hover);
+
+  /* Interactive — active / press */
+  --scale-active: 0.97;
+
+  /* Motion — easing & duration */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-hover: 180ms;
+  --duration-active: 80ms;
+  --translate-hover-lift: -3px;
+  --translate-card-active: -1px;
+
+  /* Ticker */
+  --ticker-duration: 28s;
+  --ticker-timing-function: linear;
+  --ticker-iteration-count: infinite;
+
+  /* Semantic type colors (from design system) */
+  --color-genre-city: var(--orange);
+  --color-stat-number: var(--orange);
+
+  /* Stage hero */
+  --text-eyebrow: 10px;
+  --tracking-eyebrow: 0.16em;
+  --eyebrow-rule-width: 40px;
+  --eyebrow-rule-height: 0.5px;
+  --eyebrow-rule-opacity: 0.4;
+  --text-subhero: 15px;
+  --max-width-subhero: 400px;
+  --gap-hero-ctas: 12px;
+  --padding-stage-hero-top: 56px;
+  --padding-stage-hero-bottom: 48px;
+  --padding-stage-hero-x: 40px;
+  --stats-row-padding-top: 24px;
+  --gap-hero-stats: 32px;
+  --text-featured-card-name: 26px;
+  --text-featured-tag: 9px;
+  --padding-featured-tag-y: 3px;
+  --padding-featured-tag-x: 8px;
+  --text-follow-sm: 11px;
+  --padding-follow-sm-y: 4px;
+  --padding-follow-sm-x: 12px;
+  --text-initials-hero-art: 80px;
+  --gap-hero-columns: 48px;
+  --featured-card-body-padding: 16px;
+  --leading-hero-block: 0.92;
+  --leading-stat-label: 1.4;
+  --text-featured-pulse: 12px;
+}
