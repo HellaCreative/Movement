@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, useReducedMotion } from "framer-motion";
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
@@ -51,8 +52,8 @@ const copyStyle: CSSProperties = {
 function initialsFromName(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length >= 2) {
-    const a = parts[0][0] ?? "";
-    const b = parts[1][0] ?? "";
+    const a = parts[0]![0] ?? "";
+    const b = parts[1]![0] ?? "";
     return `${a}${b}`.toUpperCase();
   }
   return name.slice(0, 2).toUpperCase();
@@ -220,21 +221,7 @@ function ArtistCard({
   portraitSrc?: string;
   swatch: string;
 }) {
-  const [hover, setHover] = useState(false);
-
-  const cardOuter: CSSProperties = {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    flexShrink: 0,
-    gap: "10px",
-    padding: "8px 16px 8px 8px",
-    borderRadius: "var(--radius)",
-    cursor: "pointer",
-    backgroundColor: hover ? "rgba(255, 255, 255, 0.05)" : "transparent",
-    transition:
-      "background-color var(--duration-hover) var(--ease)",
-  };
+  const reduce = useReducedMotion();
 
   const textCol: CSSProperties = {
     display: "flex",
@@ -267,23 +254,47 @@ function ArtistCard({
   };
 
   return (
-    <div
-      style={cardOuter}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+    <motion.div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        flexShrink: 0,
+        gap: "10px",
+        padding: "8px 16px 8px 8px",
+        borderRadius: "var(--radius)",
+        cursor: "pointer",
+      }}
+      whileHover={
+        reduce
+          ? undefined
+          : {
+              y: -3,
+              backgroundColor: "rgba(255,255,255,0.12)",
+              transition: { type: "spring", stiffness: 400, damping: 25 },
+            }
+      }
     >
-      <ArtistAvatar
-        name={artist.name}
-        portraitSrc={portraitSrc}
-        swatch={swatch}
-        initials={initialsFromName(artist.name)}
-        sizePx={40}
-        initialsSizePx={14}
-      />
+      <motion.div
+        whileHover={
+          reduce ? undefined : { scale: 1.08 }
+        }
+        transition={{ duration: 0.3 }}
+        style={{ borderRadius: "var(--radius)", overflow: "hidden", flexShrink: 0 }}
+      >
+        <ArtistAvatar
+          name={artist.name}
+          portraitSrc={portraitSrc}
+          swatch={swatch}
+          initials={initialsFromName(artist.name)}
+          sizePx={40}
+          initialsSizePx={14}
+        />
+      </motion.div>
       <div style={textCol}>
         <span style={nameLine}>{artist.name}</span>
         <span style={pulseLine}>{artist.pulseActivity}</span>
       </div>
-    </div>
+    </motion.div>
   );
 }

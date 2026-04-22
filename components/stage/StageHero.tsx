@@ -1,21 +1,29 @@
 "use client";
 
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  useInView,
+  useReducedMotion,
+} from "framer-motion";
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   artistPortraitBySlug,
   artists,
+  formatHypeCoinsUsdShort,
+  platformStats,
   platformStatsHero,
   stageHeroCopy,
 } from "@/lib/data";
 
-const HERO_SUBTEXT =
-  "The show ends. The connection doesn't. Band as One is where artists own the room — and fans finally belong to it.";
-
 const CAROUSEL_MS = 5000;
 const FADE_MS = 800;
+
+const BAND_HEADLINE = "BAND.";
 
 const sectionStyle: CSSProperties = {
   position: "relative",
@@ -48,8 +56,8 @@ const overlayStyle: CSSProperties = {
   zIndex: 1,
   pointerEvents: "none",
   background: `
-    linear-gradient(to right, rgba(12,11,10,0.92) 0%, rgba(12,11,10,0.75) 40%, rgba(12,11,10,0.2) 65%, transparent 100%),
-    linear-gradient(to top, rgba(12,11,10,0.85) 0%, transparent 45%)
+    linear-gradient(to right, rgba(12,11,10,0.96) 0%, rgba(12,11,10,0.92) 30%, rgba(12,11,10,0.6) 55%, rgba(12,11,10,0.1) 80%, transparent 100%),
+    linear-gradient(to top, rgba(12,11,10,0.9) 0%, rgba(12,11,10,0.4) 30%, transparent 60%)
   `,
 };
 
@@ -73,7 +81,7 @@ const leftZoneStyle: CSSProperties = {
   position: "absolute",
   left: "0",
   bottom: "0",
-  maxWidth: "560px",
+  maxWidth: "640px",
   pointerEvents: "auto",
 };
 
@@ -93,51 +101,39 @@ const rightZoneStyle: CSSProperties = {
   boxShadow: "0 12px 40px rgba(0,0,0,0.45)",
 };
 
-const eyebrowRowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "calc(var(--space-base) * 1.25)",
-  marginBottom: "calc(var(--space-base) * 2)",
-};
-
-const eyebrowTextStyle: CSSProperties = {
+/** Line 1 — eyebrow */
+const heroEyebrowStyle: CSSProperties = {
   fontFamily: "var(--font-mono)",
-  fontSize: "var(--text-eyebrow)",
-  fontWeight: 500,
-  letterSpacing: "var(--tracking-eyebrow)",
+  fontSize: "11px",
   textTransform: "uppercase",
+  letterSpacing: "0.14em",
   color: "var(--orange)",
+  marginBottom: "12px",
+  marginTop: 0,
 };
 
-const eyebrowRuleStyle: CSSProperties = {
-  display: "inline-block",
-  width: "var(--eyebrow-rule-width)",
-  height: "var(--eyebrow-rule-height)",
-  backgroundColor: "var(--orange)",
-  opacity: "var(--eyebrow-rule-opacity)",
-  flexShrink: 0,
-};
-
-const headlineBase: CSSProperties = {
+/** Line 2 — dominant name */
+const heroBrandStyle: CSSProperties = {
   fontFamily: "var(--font-display)",
-  fontSize: "var(--text-hero)",
+  fontSize: "220px",
   fontWeight: 800,
-  textTransform: "uppercase",
-  lineHeight: "var(--leading-hero-block)",
-  margin: 0,
-};
-
-const headlineLine1Style: CSSProperties = {
-  ...headlineBase,
-  display: "block",
-  color: "var(--white)",
-};
-
-const headlineLine2Style: CSSProperties = {
-  ...headlineBase,
-  display: "block",
-  color: "var(--orange)",
   fontStyle: "italic",
+  color: "var(--orange)",
+  lineHeight: 0.85,
+  marginBottom: "8px",
+  marginTop: 0,
+};
+
+/** Line 3 — supporting line */
+const heroSupportingStyle: CSSProperties = {
+  fontFamily: "var(--font-display)",
+  fontSize: "44px",
+  fontWeight: 700,
+  textTransform: "uppercase",
+  color: "var(--white)",
+  lineHeight: 1,
+  marginBottom: 0,
+  marginTop: 0,
 };
 
 const subtextStyle: CSSProperties = {
@@ -152,37 +148,40 @@ const subtextStyle: CSSProperties = {
 
 const statsRowStyle: CSSProperties = {
   display: "flex",
-  flexWrap: "wrap",
-  gap: "var(--gap-hero-stats)",
-  paddingTop: "var(--stats-row-padding-top)",
-  borderTop: "var(--border-default)",
+  flexDirection: "row",
+  flexWrap: "nowrap",
+  gap: "32px",
+  paddingTop: "24px",
+  borderTop: "0.5px solid var(--border)",
   marginTop: "calc(var(--space-base) * 3)",
+  width: "100%",
 };
 
 const statBlockStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-start",
+  flexShrink: 0,
 };
 
 const statNumberStyle: CSSProperties = {
-  fontFamily: "var(--font-display)",
   fontSize: "28px",
-  lineHeight: "1",
-  display: "block",
   fontWeight: 700,
+  lineHeight: 1,
+  display: "block",
   color: "var(--orange)",
+  fontFamily: "var(--font-display)",
+  textShadow: "0 1px 8px rgba(12,11,10,0.6)",
 };
 
 const statLabelStyle: CSSProperties = {
+  fontSize: "9px",
   fontFamily: "var(--font-mono)",
-  fontSize: "var(--text-ui-label-min)",
-  fontWeight: 400,
-  letterSpacing: "var(--tracking-ui-label)",
   textTransform: "uppercase",
-  color: "var(--sub)",
+  letterSpacing: "0.12em",
+  color: "var(--muted)",
   marginTop: "4px",
-  lineHeight: "var(--leading-stat-label)",
+  display: "block",
 };
 
 const ctaRowStyle: CSSProperties = {
@@ -239,9 +238,81 @@ const followBtnOverrides: CSSProperties = {
   marginTop: "14px",
 };
 
+const STAT_TARGETS = [
+  platformStats.artistsOnStage,
+  80,
+  platformStats.hypeCoinsInCirculation / 1_000_000,
+] as const;
+
+function formatStatText(index: number, value: number): string {
+  if (index === 0) return Math.round(value).toLocaleString("en-US");
+  if (index === 1) return `${Math.round(value)}%`;
+  return formatHypeCoinsUsdShort(value * 1_000_000);
+}
+
+function HeroStatBlock({
+  statIndex,
+  label,
+}: {
+  statIndex: number;
+  label: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const reduce = useReducedMotion();
+  const finalText = platformStatsHero[statIndex]!.value;
+  const [display, setDisplay] = useState(() =>
+    reduce ? finalText : "0",
+  );
+
+  useEffect(() => {
+    if (reduce) {
+      setDisplay(finalText);
+      return;
+    }
+    if (!inView) return;
+
+    const target = STAT_TARGETS[statIndex]!;
+    const controls = animate(0, 1, {
+      duration: 1.2,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (progress) => {
+        const v = progress * target;
+        setDisplay(formatStatText(statIndex, v));
+      },
+    });
+
+    return () => controls.stop();
+  }, [inView, reduce, statIndex, finalText]);
+
+  return (
+    <motion.div
+      ref={ref}
+      style={statBlockStyle}
+      initial={
+        reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }
+      }
+      animate={{ opacity: 1, y: 0 }}
+      transition={
+        reduce
+          ? { duration: 0 }
+          : {
+              duration: 0.4,
+              delay: 0.9 + statIndex * 0.1,
+              ease: "easeOut",
+            }
+      }
+    >
+      <span style={statNumberStyle}>{display}</span>
+      <span style={statLabelStyle}>{label}</span>
+    </motion.div>
+  );
+}
+
 export function StageHero() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [carouselPaused, setCarouselPaused] = useState(false);
+  const reduce = useReducedMotion();
 
   const featured = artists[slideIndex]!;
   const featuredPortrait = artistPortraitBySlug[featured.slug];
@@ -253,6 +324,8 @@ export function StageHero() {
     }, CAROUSEL_MS);
     return () => window.clearInterval(id);
   }, [carouselPaused]);
+
+  const letters = BAND_HEADLINE.split("");
 
   return (
     <section
@@ -295,48 +368,137 @@ export function StageHero() {
 
       <div style={contentShellStyle}>
         <div style={leftZoneStyle}>
-          <div style={eyebrowRowStyle}>
-            <span style={eyebrowTextStyle}>{stageHeroCopy.eyebrow}</span>
-            <span style={eyebrowRuleStyle} aria-hidden />
-          </div>
-
-          <h1 id="stage-hero-heading" style={{ margin: 0 }}>
-            <span style={headlineLine1Style}>{stageHeroCopy.headlineLine1}</span>
-            <span style={headlineLine2Style}>{stageHeroCopy.headlineLine2}</span>
+          <motion.p
+            style={heroEyebrowStyle}
+            initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduce
+                ? { duration: 0 }
+                : { duration: 0.4, ease: "easeOut", delay: 0.1 }
+            }
+          >
+            Not a platform. A scene.
+          </motion.p>
+          <h1 id="stage-hero-heading" style={heroBrandStyle}>
+            {letters.map((ch, i) => (
+              <motion.span
+                key={`${ch}-${i}`}
+                style={{ display: "inline-block" }}
+                initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: -60 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={
+                  reduce
+                    ? { duration: 0 }
+                    : {
+                        type: "spring",
+                        stiffness: 120,
+                        damping: 14,
+                        delay: 0.2 + i * 0.04,
+                      }
+                }
+              >
+                {ch}
+              </motion.span>
+            ))}
           </h1>
+          <motion.p
+            style={heroSupportingStyle}
+            initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduce
+                ? { duration: 0 }
+                : { duration: 0.5, ease: "easeOut", delay: 0.6 }
+            }
+          >
+            Artist-owned. Fan-driven.
+          </motion.p>
 
-          <p style={subtextStyle}>{HERO_SUBTEXT}</p>
+          <motion.p
+            style={subtextStyle}
+            initial={{ opacity: reduce ? 1 : 0 }}
+            animate={{ opacity: 1 }}
+            transition={
+              reduce ? { duration: 0 } : { duration: 0.6, delay: 0.8 }
+            }
+          >
+            {stageHeroCopy.subtext}
+          </motion.p>
 
           <div style={statsRowStyle}>
-            {platformStatsHero.map((stat) => (
-              <div key={stat.label} style={statBlockStyle}>
-                <span style={statNumberStyle}>{stat.value}</span>
-                <span style={statLabelStyle}>{stat.label}</span>
-              </div>
+            {platformStatsHero.map((stat, i) => (
+              <HeroStatBlock key={stat.label} statIndex={i} label={stat.label} />
             ))}
           </div>
 
-          <div style={ctaRowStyle}>
+          <motion.div
+            style={ctaRowStyle}
+            initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduce ? { duration: 0 } : { duration: 0.4, delay: 1.2 }
+            }
+          >
             <a className="btn-primary" href="#">
               {stageHeroCopy.primaryCta}
             </a>
             <a className="btn-ghost" href="#">
               {stageHeroCopy.secondaryCta}
             </a>
-          </div>
+          </motion.div>
         </div>
 
-        <div style={rightZoneStyle}>
-          <div style={featuredTagTextStyle}>{stageHeroCopy.featuredArtistTag}</div>
-          <h2 style={rightNameStyle}>{featured.name}</h2>
-          <p style={rightGenreStyle}>
-            {featured.genre} · {featured.city}
-          </p>
-          <p style={rightPulseStyle}>{featured.pulseActivity}</p>
-          <a className="btn-ghost" style={followBtnOverrides} href="#">
-            Follow
-          </a>
-        </div>
+        <motion.div
+          style={rightZoneStyle}
+          initial={reduce ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={
+            reduce
+              ? { duration: 0 }
+              : { duration: 0.6, ease: "easeOut", delay: 0.5 }
+          }
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={featured.slug}
+              initial={
+                reduce ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }
+              }
+              animate={{ opacity: 1, x: 0 }}
+              transition={
+                reduce
+                  ? { duration: 0 }
+                  : { duration: 0.4, ease: "easeOut" }
+              }
+              exit={
+                reduce
+                  ? { opacity: 1, x: 0 }
+                  : {
+                      opacity: 0,
+                      x: -20,
+                      transition: { duration: 0.3 },
+                    }
+              }
+            >
+              <div style={featuredTagTextStyle}>{stageHeroCopy.featuredArtistTag}</div>
+              <h2 style={rightNameStyle}>{featured.name}</h2>
+              <p style={rightGenreStyle}>
+                {featured.genre} · {featured.city}
+              </p>
+              <p style={rightPulseStyle}>{featured.pulseActivity}</p>
+              <motion.a
+                className="btn-ghost"
+                style={followBtnOverrides}
+                href="#"
+                whileHover={reduce ? undefined : { scale: 1.05 }}
+                whileTap={reduce ? undefined : { scale: 0.95 }}
+              >
+                Follow
+              </motion.a>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );

@@ -133,6 +133,7 @@ export type Label = {
   founderName: string;
   labelName: string;
   backing: string;
+  genre: string;
 };
 
 export const labels: Label[] = [
@@ -140,16 +141,124 @@ export const labels: Label[] = [
     founderName: "Velvet Static",
     labelName: "Backcountry Records",
     backing: "Maren Fold, Gravel Hours + 2 others",
+    genre: "Alt-rock",
   },
   {
     founderName: "River Kite",
     labelName: "Midnight Faction",
     backing: "Pale Wire, The Lowland Set",
+    genre: "Punk",
   },
   {
     founderName: "Dusk Harbor",
     labelName: "Open Water",
     backing: "Gravel Hours + 3 emerging artists",
+    genre: "Country",
+  },
+];
+
+export type BackedArtistEntry = {
+  slug: string;
+  backedBy: string;
+  labelName: string;
+};
+
+export const backedArtists: BackedArtistEntry[] = [
+  {
+    slug: "maren-fold",
+    backedBy: "Velvet Static",
+    labelName: "Backcountry Records",
+  },
+  {
+    slug: "gravel-hours",
+    backedBy: "Velvet Static",
+    labelName: "Backcountry Records",
+  },
+  {
+    slug: "pale-wire",
+    backedBy: "River Kite",
+    labelName: "Midnight Faction",
+  },
+];
+
+export type StageEvent = {
+  id: string;
+  artistSlug: string;
+  artistName: string;
+  type: "Show" | "Stream" | "Live chat";
+  date: string;
+  venue: string;
+  city: string;
+  genre: string;
+  detail: string;
+};
+
+export const stageEvents: StageEvent[] = [
+  {
+    id: "1",
+    artistSlug: "maren-fold",
+    artistName: "Maren Fold",
+    type: "Show",
+    date: "May 3",
+    venue: "Seahorse Tavern",
+    city: "Halifax, NS",
+    genre: "Folk",
+    detail: "$15",
+  },
+  {
+    id: "2",
+    artistSlug: "velvet-static",
+    artistName: "Velvet Static",
+    type: "Stream",
+    date: "Thu 8pm",
+    venue: "Live session",
+    city: "Vancouver, BC",
+    genre: "Alt-rock",
+    detail: "Subscribers",
+  },
+  {
+    id: "3",
+    artistSlug: "pale-wire",
+    artistName: "Pale Wire",
+    type: "Show",
+    date: "May 9",
+    venue: "Marquee Club",
+    city: "Halifax, NS",
+    genre: "Punk",
+    detail: "$12",
+  },
+  {
+    id: "4",
+    artistSlug: "tender-iron",
+    artistName: "Tender Iron",
+    type: "Live chat",
+    date: "Fri 9pm",
+    venue: "Band chat",
+    city: "Nashville, TN",
+    genre: "Americana",
+    detail: "Free",
+  },
+  {
+    id: "5",
+    artistSlug: "gravel-hours",
+    artistName: "Gravel Hours",
+    type: "Stream",
+    date: "Sat 7pm",
+    venue: "Writing session",
+    city: "Calgary, AB",
+    genre: "Country",
+    detail: "Subscribers",
+  },
+  {
+    id: "6",
+    artistSlug: "otis-brook",
+    artistName: "Otis Brook",
+    type: "Show",
+    date: "May 17",
+    venue: "Casino NS Stage",
+    city: "Halifax, NS",
+    genre: "Acoustic",
+    detail: "$28",
   },
 ];
 
@@ -174,26 +283,27 @@ export function formatHypeCoinsUsdShort(usd: number): string {
 /** Three stats for the Stage hero — labels and display values derived from `platformStats`. */
 export const platformStatsHero = [
   {
-    label: "Artists on the stage",
+    label: "Artists",
     value: platformStats.artistsOnStage.toLocaleString("en-US"),
   },
   {
-    label: "% of revenue to the artist",
-    value: `${platformStats.percentToArtist}%`,
+    label: "Goes to the artist",
+    value: "80%",
   },
   {
-    label: "Hype Coins in circulation",
+    label: "Hype Coins earned",
     value: formatHypeCoinsUsdShort(platformStats.hypeCoinsInCirculation),
   },
 ] as const;
 
 /** Stage hero marketing copy. */
 export const stageHeroCopy = {
-  eyebrow: "Artist-owned — Fan-driven",
-  headlineLine1: "Not a platform.",
-  headlineLine2: "A scene.",
+  eyebrow: "Not a platform. A scene.",
+  headlineLine1: "Artist-owned.",
+  headlineLine2: "Fan-driven.",
+  headlineLine3: "Band.",
   subtext:
-    "The green room is gone. The algorithm is gone. What's left is the artist, the room, and the fans who actually showed up.",
+    "The show ends. The connection doesn't. Band as One is where artists own the room — and fans finally belong to it.",
   primaryCta: "Own your stage →",
   secondaryCta: "Read the manifesto",
   featuredArtistTag: "Featured artist",
@@ -213,17 +323,11 @@ export const tierFilters = [
   "Established",
 ] as const;
 
-/** Genre chips — The Stage controls (brief). */
-export const genreFilters = [
-  "All genres",
-  "Indie",
-  "Punk",
-  "Folk",
-  "Metal",
-  "Hip-hop",
-  "Electronic",
-  "Country",
-] as const;
+export function getDerivedGenres(): string[] {
+  const genres = artists.map((a) => a.genre);
+  const unique = Array.from(new Set(genres)).sort();
+  return ["All genres", ...unique];
+}
 
 /** Full-width ticker: `name / city — pulse` (brief: real names and pulse lines). */
 export const tickerItems: string[] = artists.map(

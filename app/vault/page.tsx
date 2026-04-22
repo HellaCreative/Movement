@@ -1,3 +1,5 @@
+import { PlaceholderShell } from "@/components/PlaceholderShell";
+
 export default function VaultPage() {
-  return null;
+  return <PlaceholderShell title="The Vault" />;
 }
