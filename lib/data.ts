@@ -338,3 +338,517 @@ export const tickerItems: string[] = artists.map(
 export function getArtistBySlug(slug: string): Artist | undefined {
   return artists.find((a) => a.slug === slug);
 }
+
+// --- Artist page: rich profile, exclusives, merch (append-only) ---
+
+export type ExclusiveContent = {
+  id: string;
+  artistSlug: string;
+  title: string;
+  type:
+    | "Demo"
+    | "Early Access"
+    | "Live Recording"
+    | "Studio Session"
+    | "Behind the Scenes"
+    | "Fan Chat";
+  date: string;
+  description: string;
+  duration: string;
+  thumbnailImage: string;
+  videoFile?: string;
+  subscribersOnly: boolean;
+  isNew: boolean;
+};
+
+export type MerchItem = {
+  id: string;
+  artistSlug: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: "Apparel" | "Vinyl" | "Accessories" | "Limited";
+  sizes?: string[];
+  inStock: boolean;
+  soldOut: boolean;
+  showSpecific?: string;
+  isNew: boolean;
+};
+
+export type MusicSource = {
+  platform: "Spotify" | "SoundCloud" | "YouTube" | "Apple Music" | "Bandcamp";
+  url: string;
+  embedUrl: string;
+  available: boolean;
+};
+
+export type ArtistProfile = {
+  slug: string;
+  bio: string;
+  longBio: string;
+  subscriberCount: number;
+  backedByCount: number;
+  subscriberPrice: number;
+  location: {
+    city: string;
+    province: string;
+    country: string;
+  };
+  socialLinks: {
+    instagram?: string;
+    tiktok?: string;
+    youtube?: string;
+    spotify?: string;
+    soundcloud?: string;
+    bandcamp?: string;
+  };
+  musicSources: MusicSource[];
+  heroImages: string[];
+  galleryImages: string[];
+  /** Studio gatefold — optional pinned note above long bio */
+  pinnedNote?: string;
+  /** Studio gatefold — pull quote below gallery */
+  pullQuote?: string;
+  pullQuoteContext?: string;
+};
+
+export const marenFoldProfile: ArtistProfile = {
+  slug: "maren-fold",
+  bio: "Indie folk from Halifax. Writing songs about the coast, the cold, and the people who stay.",
+  longBio:
+    "Maren Fold is a Halifax-based singer-songwriter whose music sits at the intersection of coastal folk and raw electric intimacy. Her songs are built from the kind of details most people walk past — a tide chart on a kitchen wall, a voice on a ferry intercom, the particular silence of a Maritime winter. She has been performing since 2019, releasing two EPs independently and building a fiercely loyal following across Atlantic Canada. Her live shows are known for their stillness: just her, a guitar, and a room that stops talking.",
+  subscriberCount: 847,
+  backedByCount: 1,
+  subscriberPrice: 8,
+  location: {
+    city: "Halifax",
+    province: "Nova Scotia",
+    country: "Canada",
+  },
+  socialLinks: {
+    instagram: "https://instagram.com/marenfold",
+    tiktok: "https://tiktok.com/@marenfold",
+    spotify: "https://open.spotify.com/artist/marenfold",
+    soundcloud: "https://soundcloud.com/marenfold",
+    bandcamp: "https://marenfold.bandcamp.com",
+  },
+  musicSources: [
+    {
+      platform: "Spotify",
+      url: "https://open.spotify.com/artist/marenfold",
+      embedUrl: "https://open.spotify.com/embed/artist/marenfold",
+      available: true,
+    },
+    {
+      platform: "SoundCloud",
+      url: "https://soundcloud.com/marenfold",
+      embedUrl:
+        "https://w.soundcloud.com/player/?url=https://soundcloud.com/marenfold",
+      available: true,
+    },
+    {
+      platform: "Bandcamp",
+      url: "https://marenfold.bandcamp.com",
+      embedUrl: "https://bandcamp.com/EmbeddedPlayer/album=marenfold",
+      available: true,
+    },
+  ],
+  heroImages: [
+    "/images_tmp/Maren_Fold/pexels-shelaghmurphy-1666816.jpg",
+    "/images_tmp/Maren_Fold/pexels-thibault-trillet-44912-167579.jpg",
+    "/images_tmp/Maren_Fold/pexels-cottonbro-5650693.jpg",
+  ],
+  galleryImages: [
+    "/images_tmp/Maren_Fold/pexels-cottonbro-5650948.jpg",
+  ],
+  pinnedNote:
+    "If you're here, you're early. I'm still figuring out how much of the process to show — but I'd rather show too much than hide the wrong thing.",
+};
+
+export const marenFoldExclusiveContent: ExclusiveContent[] = [
+  {
+    id: "mf-ec-1",
+    artistSlug: "maren-fold",
+    title: "Tundra EP — Demo Sessions",
+    type: "Demo",
+    date: "Apr 18, 2026",
+    description:
+      "Raw demos from the Tundra EP sessions. Four songs before the production touched them.",
+    duration: "18:42",
+    thumbnailImage: "/images_tmp/Maren_Fold/pexels-cottonbro-5650693.jpg",
+    videoFile: "/videos/maren-fold/studio-session-tundra-ep.mp4",
+    subscribersOnly: true,
+    isNew: true,
+  },
+  {
+    id: "mf-ec-2",
+    artistSlug: "maren-fold",
+    title: "Live at the Seahorse — Full Set",
+    type: "Live Recording",
+    date: "Apr 12, 2026",
+    description:
+      "Complete recording from the April Seahorse show. 45 minutes, no cuts.",
+    duration: "44:55",
+    thumbnailImage: "/images_tmp/Maren_Fold/pexels-thibault-trillet-44912-167579.jpg",
+    videoFile: "/videos/maren-fold/performance-live-seahorse.mp4",
+    subscribersOnly: true,
+    isNew: true,
+  },
+  {
+    id: "mf-ec-3",
+    artistSlug: "maren-fold",
+    title: "Writing Session — April",
+    type: "Studio Session",
+    date: "Apr 8, 2026",
+    description:
+      "Two hours in the room. Watch a song get written from a single line.",
+    duration: "1:52:14",
+    thumbnailImage: "/images_tmp/Maren_Fold/pexels-cottonbro-5650948.jpg",
+    videoFile: "/videos/maren-fold/writing-session-april.mp4",
+    subscribersOnly: true,
+    isNew: false,
+  },
+  {
+    id: "mf-ec-4",
+    artistSlug: "maren-fold",
+    title: "New Single — Early Access",
+    type: "Early Access",
+    date: "Apr 5, 2026",
+    description:
+      "The new single before it hits any platform. Subscribers get it three weeks early.",
+    duration: "3:47",
+    thumbnailImage: "/images_tmp/Maren_Fold/pexels-melvin-buezo-1253763-2529174.jpg",
+    videoFile: "/videos/maren-fold/early-access-new-single.mp4",
+    subscribersOnly: true,
+    isNew: false,
+  },
+  {
+    id: "mf-ec-5",
+    artistSlug: "maren-fold",
+    title: "Acoustic Set — Backstage at Ship",
+    type: "Behind the Scenes",
+    date: "Mar 28, 2026",
+    description:
+      "Three songs on a phone camera backstage at The Ship. Unplanned. Real.",
+    duration: "11:20",
+    thumbnailImage: "/images_tmp/Maren_Fold/pexels-sam-hofman-817359426-29872936.jpg",
+    videoFile: "/videos/maren-fold/acoustic-set-backstage.mp4",
+    subscribersOnly: false,
+    isNew: false,
+  },
+  {
+    id: "mf-ec-6",
+    artistSlug: "maren-fold",
+    title: "Fan Chat — March",
+    type: "Fan Chat",
+    date: "Mar 15, 2026",
+    description:
+      "One hour open chat. Questions about the EP, touring, and why she hates reverb.",
+    duration: "58:03",
+    thumbnailImage: "/images_tmp/Maren_Fold/pexels-pavel-danilyuk-7802615.jpg",
+    videoFile: "/videos/maren-fold/fan-chat-march.mp4",
+    subscribersOnly: true,
+    isNew: false,
+  },
+];
+
+export const marenFoldEvents: StageEvent[] = [
+  {
+    id: "mf-ev-1",
+    artistSlug: "maren-fold",
+    artistName: "Maren Fold",
+    type: "Show",
+    date: "May 3",
+    venue: "The Seahorse Tavern",
+    city: "Halifax, NS",
+    genre: "Indie Folk",
+    detail: "$15",
+  },
+  {
+    id: "mf-ev-2",
+    artistSlug: "maren-fold",
+    artistName: "Maren Fold",
+    type: "Show",
+    date: "May 14",
+    venue: "The Carleton",
+    city: "Halifax, NS",
+    genre: "Indie Folk",
+    detail: "$12",
+  },
+  {
+    id: "mf-ev-3",
+    artistSlug: "maren-fold",
+    artistName: "Maren Fold",
+    type: "Show",
+    date: "Jun 7",
+    venue: "The Marquee Club",
+    city: "Halifax, NS",
+    genre: "Indie Folk",
+    detail: "$18",
+  },
+  {
+    id: "mf-ev-4",
+    artistSlug: "maren-fold",
+    artistName: "Maren Fold",
+    type: "Stream",
+    date: "Thu 8pm",
+    venue: "Live writing session",
+    city: "Online",
+    genre: "Indie Folk",
+    detail: "Subscribers",
+  },
+  {
+    id: "mf-ev-5",
+    artistSlug: "maren-fold",
+    artistName: "Maren Fold",
+    type: "Stream",
+    date: "Sat 7pm",
+    venue: "Album playback stream",
+    city: "Online",
+    genre: "Indie Folk",
+    detail: "Free",
+  },
+  {
+    id: "mf-ev-6",
+    artistSlug: "maren-fold",
+    artistName: "Maren Fold",
+    type: "Live chat",
+    date: "Fri 9pm",
+    venue: "Subscriber Q&A",
+    city: "Online",
+    genre: "Indie Folk",
+    detail: "Subscribers",
+  },
+];
+
+export const marenFoldMerch: MerchItem[] = [
+  {
+    id: "mf-m-1",
+    artistSlug: "maren-fold",
+    name: "Tundra EP — Vinyl",
+    description:
+      "Limited pressing. 180g black vinyl, printed inner sleeve, hand-numbered.",
+    price: 34,
+    image: "/images_tmp/Maren_Fold/pexels-cottonbro-5650693.jpg",
+    category: "Vinyl",
+    inStock: true,
+    soldOut: false,
+    isNew: true,
+  },
+  {
+    id: "mf-m-2",
+    artistSlug: "maren-fold",
+    name: "Seahorse May 3 — Tour Tee",
+    description:
+      "Show-specific shirt. Black heavyweight cotton, show date and venue on the back.",
+    price: 38,
+    image: "/images_tmp/Maren_Fold/pexels-shelaghmurphy-1666816.jpg",
+    category: "Apparel",
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    inStock: true,
+    soldOut: false,
+    showSpecific: "Seahorse Tavern — May 3, 2026",
+    isNew: true,
+  },
+  {
+    id: "mf-m-3",
+    artistSlug: "maren-fold",
+    name: "Tide Chart Tee",
+    description:
+      "The coast design. Sand coloured with a hand-drawn tide chart graphic.",
+    price: 35,
+    image: "/images_tmp/Maren_Fold/pexels-thibault-trillet-44912-167579.jpg",
+    category: "Apparel",
+    sizes: ["XS", "S", "M", "L", "XL"],
+    inStock: true,
+    soldOut: false,
+    isNew: false,
+  },
+  {
+    id: "mf-m-4",
+    artistSlug: "maren-fold",
+    name: "Embroidered Cap",
+    description:
+      "Six-panel, unstructured. Maren Fold script embroidered in cream.",
+    price: 28,
+    image: "/images_tmp/Maren_Fold/pexels-cottonbro-5650948.jpg",
+    category: "Accessories",
+    inStock: true,
+    soldOut: false,
+    isNew: false,
+  },
+  {
+    id: "mf-m-5",
+    artistSlug: "maren-fold",
+    name: "Signed Lyric Sheet — Cold Harbour",
+    description:
+      "Handwritten lyrics to Cold Harbour. Signed, numbered edition of 50.",
+    price: 45,
+    image: "/images_tmp/Maren_Fold/pexels-pavel-danilyuk-7802615.jpg",
+    category: "Limited",
+    inStock: true,
+    soldOut: false,
+    isNew: false,
+  },
+  {
+    id: "mf-m-6",
+    artistSlug: "maren-fold",
+    name: "First EP — Cassette",
+    description:
+      "The 2021 debut EP on cassette. Limited to original 200 run — 14 left.",
+    price: 16,
+    image: "/images_tmp/Maren_Fold/pexels-melvin-buezo-1253763-2529174.jpg",
+    category: "Limited",
+    inStock: true,
+    soldOut: false,
+    isNew: false,
+  },
+  {
+    id: "mf-m-7",
+    artistSlug: "maren-fold",
+    name: "Tundra Hoodie",
+    description:
+      "Heavyweight pullover. Tundra EP artwork on the back, small logo front.",
+    price: 68,
+    image: "/images_tmp/Maren_Fold/pexels-sam-hofman-817359426-29872936.jpg",
+    category: "Apparel",
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    inStock: false,
+    soldOut: true,
+    isNew: false,
+  },
+];
+
+export function getArtistProfile(slug: string): ArtistProfile | undefined {
+  const profiles: Record<string, ArtistProfile> = {
+    "maren-fold": marenFoldProfile,
+  };
+  return profiles[slug];
+}
+
+export function getArtistExclusiveContent(slug: string): ExclusiveContent[] {
+  const allContent: Record<string, ExclusiveContent[]> = {
+    "maren-fold": marenFoldExclusiveContent,
+  };
+  return allContent[slug] ?? [];
+}
+
+export function getArtistEvents(slug: string): StageEvent[] {
+  return stageEvents
+    .filter((e) => e.artistSlug === slug)
+    .concat(
+      slug === "maren-fold"
+        ? marenFoldEvents.filter(
+            (e) => !stageEvents.find((s) => s.id === e.id),
+          )
+        : [],
+    );
+}
+
+export function getArtistMerch(slug: string): MerchItem[] {
+  const allMerch: Record<string, MerchItem[]> = {
+    "maren-fold": marenFoldMerch,
+  };
+  return allMerch[slug] ?? [];
+}
+
+export type StudioPost = {
+  id: string;
+  artistSlug: string;
+  date: string;
+  type: "text" | "image" | "video" | "quote" | "clip";
+  body?: string;
+  image?: string;
+  videoFile?: string;
+  caption?: string;
+  isNew?: boolean;
+};
+
+export const marenFoldStudioPosts: StudioPost[] = [
+  {
+    id: "mf-sp-1",
+    artistSlug: "maren-fold",
+    date: "Apr 21, 2026",
+    type: "text",
+    body: "Had macaroni and cheese before the Seahorse show last week. Not even a little bit sorry. The show was good. The mac was better.",
+    isNew: true,
+  },
+  {
+    id: "mf-sp-2",
+    artistSlug: "maren-fold",
+    date: "Apr 19, 2026",
+    type: "image",
+    image: "/images_tmp/Maren_Fold/pexels-cottonbro-5650948.jpg",
+    caption: "Writing room. 11pm. The song is almost there.",
+    isNew: true,
+  },
+  {
+    id: "mf-sp-3",
+    artistSlug: "maren-fold",
+    date: "Apr 17, 2026",
+    type: "quote",
+    body: "The second verse is always where the song decides what it actually wants to be.",
+  },
+  {
+    id: "mf-sp-4",
+    artistSlug: "maren-fold",
+    date: "Apr 14, 2026",
+    type: "image",
+    image: "/images_tmp/Maren_Fold/pexels-pavel-danilyuk-7802615.jpg",
+    caption: "Soundcheck. Empty rooms are my favourite rooms.",
+  },
+  {
+    id: "mf-sp-5",
+    artistSlug: "maren-fold",
+    date: "Apr 12, 2026",
+    type: "text",
+    body: "The Tundra EP demos are done. Four songs. I cried a little bit. Subscribers get them first — dropping Thursday.",
+  },
+  {
+    id: "mf-sp-6",
+    artistSlug: "maren-fold",
+    date: "Apr 9, 2026",
+    type: "clip",
+    videoFile: "/videos/maren-fold/acoustic-set-backstage.mp4",
+    image: "/images_tmp/Maren_Fold/pexels-sam-hofman-817359426-29872936.jpg",
+    caption:
+      "Three songs backstage at The Ship. Unplanned. My hands were shaking.",
+  },
+  {
+    id: "mf-sp-7",
+    artistSlug: "maren-fold",
+    date: "Apr 7, 2026",
+    type: "text",
+    body: "Someone asked me last night why all my songs are about leaving. I said they're not about leaving. They're about the moment before you decide.",
+  },
+  {
+    id: "mf-sp-8",
+    artistSlug: "maren-fold",
+    date: "Apr 3, 2026",
+    type: "image",
+    image: "/images_tmp/Maren_Fold/pexels-shelaghmurphy-1666816.jpg",
+    caption: "Last night. Halifax. This city.",
+  },
+  {
+    id: "mf-sp-9",
+    artistSlug: "maren-fold",
+    date: "Mar 31, 2026",
+    type: "quote",
+    body: "I write songs about the coast because the coast doesn't lie to you.",
+  },
+  {
+    id: "mf-sp-10",
+    artistSlug: "maren-fold",
+    date: "Mar 28, 2026",
+    type: "text",
+    body: "New single is mixed. Mastered Tuesday. Subscribers get it three weeks before it hits anywhere else. That's the deal I want to keep making.",
+  },
+];
+
+export function getArtistStudioPosts(slug: string): StudioPost[] {
+  const all: Record<string, StudioPost[]> = {
+    "maren-fold": marenFoldStudioPosts,
+  };
+  return all[slug] ?? [];
+}
