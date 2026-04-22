@@ -15,7 +15,12 @@ import {
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
 import { DiscoverTierFlag } from "./discoverTierFlag";
-import { matchesGenre, matchesLocationQuery, matchesTier } from "./filterUtils";
+import {
+  matchesGenre,
+  matchesLocationQuery,
+  matchesSearch,
+  matchesTier,
+} from "./filterUtils";
 import { HorizontalScrollRow } from "./HorizontalScrollRow";
 import { useHomeFilters } from "./HomeFiltersContext";
 
@@ -43,9 +48,14 @@ function filterArtists(
   activeGenre: string,
   locationQuery: string,
   activeTier: string,
+  searchQuery: string,
 ): Artist[] {
   return list.filter(
     (a) =>
+      matchesSearch(
+        { name: a.name, genre: a.genre, city: a.city },
+        searchQuery,
+      ) &&
       matchesGenre(a.genre, activeGenre) &&
       matchesLocationQuery(a.city, locationQuery) &&
       matchesTier(a.tier, activeTier),
@@ -218,8 +228,15 @@ function DiscoverCard({
 }
 
 export function DiscoverRow() {
-  const { activeGenre, locationQuery, activeTier } = useHomeFilters();
-  const filtered = filterArtists(artists, activeGenre, locationQuery, activeTier);
+  const { activeGenre, locationQuery, activeTier, searchQuery } =
+    useHomeFilters();
+  const filtered = filterArtists(
+    artists,
+    activeGenre,
+    locationQuery,
+    activeTier,
+    searchQuery,
+  );
   const shown = filtered.slice(0, 10);
 
   const sectionRef = useRef<HTMLElement>(null);

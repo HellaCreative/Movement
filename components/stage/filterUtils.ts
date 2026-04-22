@@ -1,5 +1,18 @@
 import type { ArtistTier } from "@/lib/data";
 
+export function matchesSearch(
+  artist: { name: string; genre: string; city: string },
+  query: string,
+): boolean {
+  if (!query.trim()) return true;
+  const q = query.toLowerCase();
+  return (
+    artist.name.toLowerCase().includes(q) ||
+    artist.genre.toLowerCase().includes(q) ||
+    artist.city.toLowerCase().includes(q)
+  );
+}
+
 export function matchesGenre(value: string, activeGenre: string): boolean {
   if (activeGenre === "All genres") return true;
   return value.toLowerCase().includes(activeGenre.toLowerCase());

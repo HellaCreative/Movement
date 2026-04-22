@@ -6,7 +6,7 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import type { CSSProperties } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { tierFilters } from "@/lib/data";
 
@@ -67,6 +67,7 @@ function closeAfterSelect(
 }
 
 export function FilterMegaMenu() {
+  const [pulseGenre, setPulseGenre] = useState<string | null>(null);
   const { isOpen, setIsOpen } = useFilterMenu();
   const {
     derivedGenres,
@@ -88,6 +89,10 @@ export function FilterMegaMenu() {
       locationInputRef.current?.focus();
     }, 0);
     return () => window.clearTimeout(t);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) setPulseGenre(null);
   }, [isOpen]);
 
   useEffect(() => {
@@ -129,12 +134,12 @@ export function FilterMegaMenu() {
             aria-hidden
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={
+            exit={
               reduce
-                ? { duration: 0 }
-                : { duration: 0.25, ease: "easeOut" }
+                ? { opacity: 0 }
+                : { opacity: 0, transition: { duration: 0.15 } }
             }
+            transition={reduce ? { duration: 0 } : { duration: 0.2 }}
             style={{
               position: "fixed",
               inset: 0,
@@ -149,13 +154,35 @@ export function FilterMegaMenu() {
             role="dialog"
             aria-modal="true"
             aria-label="Filters"
-            initial={reduce ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={reduce ? { y: 0, opacity: 1 } : { y: -20, opacity: 0 }}
+            initial={
+              reduce
+                ? { y: 0, opacity: 1, scaleY: 1 }
+                : {
+                    y: -40,
+                    opacity: 0,
+                    scaleY: 0.92,
+                  }
+            }
+            animate={{ y: 0, opacity: 1, scaleY: 1 }}
+            exit={
+              reduce
+                ? { y: 0, opacity: 1, scaleY: 1 }
+                : {
+                    y: -20,
+                    opacity: 0,
+                    scaleY: 0.96,
+                    transition: { duration: 0.2, ease: "easeIn" },
+                  }
+            }
             transition={
               reduce
                 ? { duration: 0 }
-                : { type: "spring", stiffness: 200, damping: 24 }
+                : {
+                    type: "spring",
+                    stiffness: 280,
+                    damping: 26,
+                    mass: 0.8,
+                  }
             }
             style={{
               position: "fixed",
@@ -173,6 +200,7 @@ export function FilterMegaMenu() {
               display: "grid",
               gridTemplateColumns: "1fr 1fr 1fr",
               gap: "48px",
+              transformOrigin: "top center",
             }}
           >
             <div>
@@ -195,15 +223,51 @@ export function FilterMegaMenu() {
                   gap: "8px",
                 }}
               >
-                {derivedGenres.map((g) => {
+                {derivedGenres.map((g, genreIndex) => {
                   const active = activeGenre === g;
+                  const isPulsing = pulseGenre === g;
                   return (
-                    <button
+                    <motion.button
                       key={g}
                       type="button"
+                      initial={
+                        reduce
+                          ? false
+                          : { opacity: 0, y: 8, scale: 0.95 }
+                      }
+                      animate={
+                        isPulsing
+                          ? {
+                              opacity: 1,
+                              y: 0,
+                              scale: [1, 1.08, 1],
+                            }
+                          : { opacity: 1, y: 0, scale: 1 }
+                      }
+                      transition={
+                        reduce
+                          ? { duration: 0 }
+                          : isPulsing
+                            ? { duration: 0.25 }
+                            : {
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 22,
+                                delay: 0.12 + genreIndex * 0.025,
+                              }
+                      }
+                      onAnimationComplete={() => {
+                        if (!isPulsing) return;
+                        setPulseGenre(null);
+                        setIsOpen(false);
+                      }}
                       onClick={() => {
                         setActiveGenre(g);
-                        closeAfterSelect(setIsOpen, reduce);
+                        if (reduce) {
+                          closeAfterSelect(setIsOpen, reduce);
+                          return;
+                        }
+                        setPulseGenre(g);
                       }}
                       style={{
                         ...chipBase,
@@ -235,13 +299,25 @@ export function FilterMegaMenu() {
                         />
                       ) : null}
                       <span style={{ position: "relative", zIndex: 1 }}>{g}</span>
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
             </div>
 
-            <div>
+            <motion.div
+              initial={reduce ? false : { opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={
+                reduce
+                  ? { duration: 0 }
+                  : {
+                      duration: 0.3,
+                      ease: [0.16, 1, 0.3, 1],
+                      delay: 0.08,
+                    }
+              }
+            >
               <div
                 style={{
                   fontFamily: "var(--font-mono)",
@@ -333,7 +409,7 @@ export function FilterMegaMenu() {
                   </button>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             <div>
               <div
@@ -349,55 +425,75 @@ export function FilterMegaMenu() {
                 Tier
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                {tierFilters.map((t) => {
+                {tierFilters.map((t, tierIndex) => {
                   const active = activeTier === t;
                   const copy = TIER_COPY[t] ?? {
                     title: t,
                     desc: "",
                   };
                   return (
-                    <button
+                    <motion.div
                       key={t}
-                      type="button"
-                      onClick={() => {
-                        setActiveTier(t);
-                        closeAfterSelect(setIsOpen, reduce);
-                      }}
-                      style={{
-                        textAlign: "left",
-                        background: active ? "var(--orange-dim)" : "var(--surface)",
-                        border: active
-                          ? "0.5px solid var(--orange)"
-                          : "0.5px solid var(--border)",
-                        borderRadius: "2px",
-                        padding: "10px 14px",
-                        cursor: "pointer",
-                      }}
-                      className="hover:!border-[var(--border-hover)]"
+                      initial={
+                        reduce
+                          ? false
+                          : { opacity: 0, y: 8, scale: 0.95 }
+                      }
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={
+                        reduce
+                          ? { duration: 0 }
+                          : {
+                              type: "spring",
+                              stiffness: 300,
+                              damping: 22,
+                              delay: 0.1 + tierIndex * 0.04,
+                            }
+                      }
                     >
-                      <div
-                        style={{
-                          fontFamily: "var(--font-display)",
-                          fontSize: "14px",
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          color: "var(--white)",
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTier(t);
+                          closeAfterSelect(setIsOpen, reduce);
                         }}
-                      >
-                        {copy.title}
-                      </div>
-                      <div
                         style={{
-                          fontFamily: "var(--font-body)",
-                          fontSize: "11px",
-                          fontWeight: 300,
-                          color: "var(--muted)",
-                          marginTop: "2px",
+                          textAlign: "left",
+                          width: "100%",
+                          background: active ? "var(--orange-dim)" : "var(--surface)",
+                          border: active
+                            ? "0.5px solid var(--orange)"
+                            : "0.5px solid var(--border)",
+                          borderRadius: "2px",
+                          padding: "10px 14px",
+                          cursor: "pointer",
                         }}
+                        className="hover:!border-[var(--border-hover)]"
                       >
-                        {copy.desc}
-                      </div>
-                    </button>
+                        <div
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: "14px",
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            color: "var(--white)",
+                          }}
+                        >
+                          {copy.title}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: "var(--font-body)",
+                            fontSize: "11px",
+                            fontWeight: 300,
+                            color: "var(--muted)",
+                            marginTop: "2px",
+                          }}
+                        >
+                          {copy.desc}
+                        </div>
+                      </button>
+                    </motion.div>
                   );
                 })}
               </div>

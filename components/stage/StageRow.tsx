@@ -14,7 +14,11 @@ import {
 
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
-import { matchesGenre, matchesLocationQuery } from "./filterUtils";
+import {
+  matchesGenre,
+  matchesLocationQuery,
+  matchesSearch,
+} from "./filterUtils";
 import { HorizontalScrollRow } from "./HorizontalScrollRow";
 import { useHomeFilters } from "./HomeFiltersContext";
 
@@ -24,9 +28,14 @@ function filterEvents(
   events: StageEvent[],
   activeGenre: string,
   locationQuery: string,
+  searchQuery: string,
 ): StageEvent[] {
   return events.filter(
     (e) =>
+      matchesSearch(
+        { name: e.artistName, genre: e.genre, city: e.city },
+        searchQuery,
+      ) &&
       matchesGenre(e.genre, activeGenre) &&
       matchesLocationQuery(e.city, locationQuery),
   );
@@ -315,8 +324,13 @@ function StageEventCard({
 }
 
 export function StageRow() {
-  const { activeGenre, locationQuery } = useHomeFilters();
-  const filtered = filterEvents(stageEvents, activeGenre, locationQuery);
+  const { activeGenre, locationQuery, searchQuery } = useHomeFilters();
+  const filtered = filterEvents(
+    stageEvents,
+    activeGenre,
+    locationQuery,
+    searchQuery,
+  );
   const shown = filtered.slice(0, 10);
 
   const sectionRef = useRef<HTMLElement>(null);

@@ -18,6 +18,8 @@ type HomeFiltersContextValue = {
   setLocationQuery: (v: string) => void;
   activeTier: string;
   setActiveTier: (v: string) => void;
+  searchQuery: string;
+  setSearchQuery: (v: string) => void;
 };
 
 const HomeFiltersContext = createContext<HomeFiltersContextValue | null>(null);
@@ -27,6 +29,7 @@ export function HomeFiltersProvider({ children }: { children: ReactNode }) {
   const [activeGenre, setActiveGenre] = useState<string>(derivedGenres[0]!);
   const [locationQuery, setLocationQuery] = useState("");
   const [activeTier, setActiveTier] = useState<string>(tierFilters[0]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const value = useMemo(
     () => ({
@@ -37,8 +40,10 @@ export function HomeFiltersProvider({ children }: { children: ReactNode }) {
       setLocationQuery,
       activeTier,
       setActiveTier,
+      searchQuery,
+      setSearchQuery,
     }),
-    [derivedGenres, activeGenre, locationQuery, activeTier],
+    [derivedGenres, activeGenre, locationQuery, activeTier, searchQuery],
   );
 
   return (

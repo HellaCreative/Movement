@@ -15,7 +15,11 @@ import {
 
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
-import { matchesGenre, matchesLocationQuery } from "./filterUtils";
+import {
+  matchesGenre,
+  matchesLocationQuery,
+  matchesSearch,
+} from "./filterUtils";
 import { HorizontalScrollRow } from "./HorizontalScrollRow";
 import { useHomeFilters } from "./HomeFiltersContext";
 
@@ -42,11 +46,16 @@ function filterBacked(
   list: BackedArtistEntry[],
   activeGenre: string,
   locationQuery: string,
+  searchQuery: string,
 ): BackedArtistEntry[] {
   return list.filter((entry) => {
     const artist = artists.find((a) => a.slug === entry.slug);
     if (!artist) return false;
     return (
+      matchesSearch(
+        { name: artist.name, genre: artist.genre, city: artist.city },
+        searchQuery,
+      ) &&
       matchesGenre(artist.genre, activeGenre) &&
       matchesLocationQuery(artist.city, locationQuery)
     );
@@ -223,8 +232,13 @@ function BackedArtistCard({
 }
 
 export function CollectiveRow() {
-  const { activeGenre, locationQuery } = useHomeFilters();
-  const filtered = filterBacked(backedArtists, activeGenre, locationQuery);
+  const { activeGenre, locationQuery, searchQuery } = useHomeFilters();
+  const filtered = filterBacked(
+    backedArtists,
+    activeGenre,
+    locationQuery,
+    searchQuery,
+  );
   const shown = filtered.slice(0, 10);
 
   const sectionRef = useRef<HTMLElement>(null);

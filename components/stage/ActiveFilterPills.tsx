@@ -7,8 +7,16 @@ import { tierFilters } from "@/lib/data";
 
 import { useHomeFilters } from "./HomeFiltersContext";
 
-const wrapStyle: CSSProperties = {
+const wrapStyleDefault: CSSProperties = {
   padding: "12px 48px",
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  gap: "8px",
+};
+
+const wrapStyleEmbedded: CSSProperties = {
+  padding: "12px 0 0",
   display: "flex",
   flexWrap: "wrap",
   alignItems: "center",
@@ -42,7 +50,13 @@ const clearLinkStyle: CSSProperties = {
   padding: "0 4px",
 };
 
-export function ActiveFilterPills() {
+type ActiveFilterPillsProps = {
+  variant?: "default" | "embedded";
+};
+
+export function ActiveFilterPills({
+  variant = "default",
+}: ActiveFilterPillsProps) {
   const {
     derivedGenres,
     activeGenre,
@@ -83,6 +97,9 @@ export function ActiveFilterPills() {
   }
 
   if (pills.length === 0) return null;
+
+  const wrapStyle =
+    variant === "embedded" ? wrapStyleEmbedded : wrapStyleDefault;
 
   return (
     <div style={wrapStyle}>
